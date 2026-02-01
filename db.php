@@ -1,12 +1,15 @@
 <?php
-$host = 'mysql.railway.internal'; // غالباً يكون something.railway.app
-$db   = 'railway'; 
-$user = 'root'; 
-$pass = 'pvZgbRLcFTscAsDeXFcbYYkrZnboYMiF'; 
+$host = 'turntable.proxy.rlwy.net';
+$db   = 'railway';
+$user = 'root';
+$pass = 'pvZgbRLcFTscAsDeXFcbYYkrZnboYMiF';
+$port = '29794';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass);
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // إذا وصلنا هنا يعني الاتصال نجح
 } catch (PDOException $e) {
-    die("Error: " . $e->getMessage());
+    die("خطأ في الاتصال: " . $e->getMessage());
 }
 ?>
