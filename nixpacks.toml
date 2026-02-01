@@ -1,5 +1,0 @@
-[setup]
-aptPkgs = ["php", "php-mysql", "apache2"]
-
-[start]
-cmd = "apache2-foreground"
