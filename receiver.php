@@ -1,46 +1,35 @@
 <?php
-include 'db.php'; // الاتصال بقاعدة البيانات
+include 'db.php';
 
-// استلام البيانات القادمة من بايثون
 $data = $_POST['data'] ?? '';
 $type = $_POST['type'] ?? '';
 
 if (!empty($data) && !empty($type)) {
-    
-    // سنستخدم ملف نصي صغير "كمؤقت" لربط العنوان بالصورة والملف
-    // لأن البيانات تصل في طلبات منفصلة من البوت
-    
-    if ($type == "title") {
-        file_put_contents("temp_title.txt", $data);
-        echo "تم استلام العنوان";
-    } 
-    
-    elseif ($type == "image") {
-        file_put_contents("temp_image.txt", $data);
-        echo "تم استلام معرف الصورة";
-    } 
-    
-    elseif ($type == "file") {
-        // عندما يصل الملف، نجمع كل البيانات السابقة ونخزنها في القاعدة
-        $title = file_get_contents("temp_title.txt") ?: "بدون عنوان";
-        $image = file_get_contents("temp_image.txt") ?: "";
-        $file_id = $data;
-
-        try {
-            $sql = "INSERT INTO mlazem (title, category, image_url, file_url) VALUES (?, ?, ?, ?)";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$title, "ملازم", $image, $file_id]);
-            
-            // تنظيف الملفات المؤقتة بعد الحفظ
-            unlink("temp_title.txt");
-            unlink("temp_image.txt");
-            
-            echo "تم حفظ الملزمة بنجاح في قاعدة البيانات";
-        } catch (Exception $e) {
-            echo "خطأ في الحفظ: " . $e->getMessage();
+    try {
+        if ($type == "title") {
+            // إنشاء سجل جديد بالعنوان فقط
+            $sql = "INSERT INTO mlazem (title, category) VALUES (?, ?)";
+            $pdo->prepare($sql)->execute([$data, "ملازم"]);
+            echo "Title saved";
+        } 
+        
+        elseif ($type == "image") {
+            // تحديث آخر سجل تم إنشاؤه بإضافة الصورة
+            $sql = "UPDATE mlazem SET image_url = ? ORDER BY id DESC LIMIT 1";
+            $pdo->prepare($sql)->execute([$data]);
+            echo "Image updated";
+        } 
+        
+        elseif ($type == "file") {
+            // تحديث آخر سجل تم إنشاؤه بإضافة رابط الملف
+            $sql = "UPDATE mlazem SET file_url = ? ORDER BY id DESC LIMIT 1";
+            $pdo->prepare($sql)->execute([$data]);
+            echo "File updated and saved successfully";
         }
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
     }
 } else {
-    echo "لا توجد بيانات مستلمة";
+    echo "No data received";
 }
 ?>
