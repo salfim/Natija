@@ -61,7 +61,7 @@ function getTelegramLink($input) {
                         <span class="badge"><?php echo htmlspecialchars($item['category']); ?></span>
                         <h3><?php echo htmlspecialchars($item['title']); ?></h3>
                         
-                        <a href="https://t.me/share/url?url=<?php echo urlencode($item['file_url']); ?>" class="download-btn" target="_blank">
+                        <a href="https://t.me/my_mlzm_126_bot?start=<?php echo $file_url; ?>
                             📥 تحميل الملف
                         </a>
                     </div>
